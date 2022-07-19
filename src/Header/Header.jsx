@@ -1,15 +1,13 @@
-import React, { useEffect } from "react";
+import React from "react";
 import styles from "./Header.module.css";
 import logo from "../assets/logo.png";
 import { auth } from "../firebase";
-import {
-  signInWithPopup,
-  GoogleAuthProvider,
-  onAuthStateChanged,
-} from "firebase/auth";
+import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { gettingUser, logOut } from "../redux/userSlice";
 import { useDispatch, useSelector } from "react-redux";
-function Header() {
+
+import plus from "../assets/plus.png";
+function Header({ openModal }) {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.userState);
   const signIn = async () => {
@@ -21,16 +19,7 @@ function Header() {
     };
     dispatch(gettingUser(newUser));
   };
-  // useEffect(() => {
-  //   onAuthStateChanged(auth, (data) => {
-  //     // if (data) {
-  //     //
-  //     // } else {
-  //     //   alert("failed");
-  //     // }
-  //     console.log(data);
-  //   });
-  // }, []);
+
   const signOut = async () => {
     const res = await auth.signOut();
     dispatch(logOut);
@@ -40,6 +29,7 @@ function Header() {
       <img src={logo} alt="" />
       {user ? (
         <div className={styles.rightHeader}>
+          <img onClick={() => openModal(true)} src={plus} alt="" />
           <img
             className={styles.profile}
             src={user?.profilePic}

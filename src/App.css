@@ -1,41 +1,65 @@
 .uploadPost {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  width: 100%;
-  bottom: 0;
-  left: 0;
-  background: black;
-  height: 180px;
-  gap: 10px;
-  margin-top: 2rem;
-}
-.uploadPost input:first-child {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr auto auto;
+  place-items: center;
   width: 500px;
+  height: 600px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  z-index: 3;
+  gap: 20px;
+  padding: 20px 0px;
+}
+.overlay {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  z-index: 2;
+  background-color: black;
+  opacity: 0.7;
+}
+.caption {
+  width: 100%;
   height: 40px;
   padding: 10px;
 }
 .file {
   display: none;
 }
+.uploadedImg {
+  max-width: 100%;
+  object-fit: contain;
+}
 .uploadPost label {
-  width: 500px;
+  width: 60%;
   height: 40px;
   text-align: center;
   align-items: center;
   display: flex;
   justify-content: center;
   cursor: pointer;
-  background-color: white;
-  color: black;
+  background-color: rgb(0, 149, 246);
+  color: white;
 }
 .upload-btn {
-  width: 500px;
+  width: 60%;
   height: 40px;
-  background-color: white;
+  background-color: rgb(0, 149, 246);
+  color: white;
   border: none;
+  border: 2px solid transparent;
+  transition: all 0.3s ease-in-out;
+  border-radius: 10px;
 }
 .upload-btn:hover {
   cursor: pointer;
+  background-color: transparent;
+  border-color: rgb(0, 149, 246);
+  color: black;
 }
