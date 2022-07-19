@@ -1,0 +1,41 @@
+.uploadPost {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+  bottom: 0;
+  left: 0;
+  background: black;
+  height: 180px;
+  gap: 10px;
+  margin-top: 2rem;
+}
+.uploadPost input:first-child {
+  width: 500px;
+  height: 40px;
+  padding: 10px;
+}
+.file {
+  display: none;
+}
+.uploadPost label {
+  width: 500px;
+  height: 40px;
+  text-align: center;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  cursor: pointer;
+  background-color: white;
+  color: black;
+}
+.upload-btn {
+  width: 500px;
+  height: 40px;
+  background-color: white;
+  border: none;
+}
+.upload-btn:hover {
+  cursor: pointer;
+}
