@@ -9,7 +9,7 @@ import {
   uploadBytesResumable,
 } from "firebase/storage";
 import { app, db } from "./firebase";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { useSelector } from "react-redux";
 import Loader from "./Loader";
 
@@ -34,6 +34,7 @@ function App() {
       setImage(e.target.files[0]);
     }
   };
+  //uploading the file to fireabase storage
   const uploadImage = () => {
     const fileRef = ref(storage, image.name);
     const uploadTask = uploadBytesResumable(fileRef, image);
@@ -64,6 +65,7 @@ function App() {
       caption: caption,
       image: URL,
       likes: 0,
+      timeStamp: serverTimestamp(),
     });
     if (res) {
       setLoader(false);

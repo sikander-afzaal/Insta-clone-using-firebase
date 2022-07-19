@@ -50,6 +50,9 @@ function Post({ post }) {
     setNewComment("");
   };
   const likeHandler = (id, likes) => {
+    if (!user) {
+      alert("please sign in");
+    }
     const query = doc(db, "posts", id);
     if (!like) {
       const likeFinal = likes + 1;
@@ -64,11 +67,17 @@ function Post({ post }) {
     }
   };
   return (
-    <div key={post.id} className={styles.post}>
+    <div
+      key={post.id}
+      className={`${styles.post} ${viewComments && styles.addRow}`}
+    >
       <img src={post?.image} alt="" />
       <div className={styles.row}>
         <svg
           onClick={() => {
+            if (!user) {
+              return alert("Please Sign in");
+            }
             setLike(true);
             likeHandler(post.id, post.likes);
           }}
@@ -81,6 +90,9 @@ function Post({ post }) {
         </svg>
         <svg
           onClick={() => {
+            if (!user) {
+              return alert("Please Sign in");
+            }
             setLike(false);
             likeHandler(post.id, post.likes);
           }}

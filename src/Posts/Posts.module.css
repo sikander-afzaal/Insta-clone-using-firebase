@@ -1,6 +1,6 @@
 .posts {
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
   align-items: center;
   gap: 40px;
   flex-wrap: wrap;
@@ -9,14 +9,16 @@
 }
 .post {
   max-width: 400px;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  flex-direction: column;
+  width: 95%;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 400px auto auto auto 40px;
   width: fit-content;
   background: white;
   border: 1px solid grey;
+  padding-bottom: 10px;
+  height: 100%;
+  align-self: flex-start;
 }
 .post img {
   max-width: 100%;
@@ -34,7 +36,7 @@
   flex-direction: column;
   margin-top: 10px;
   width: 100%;
-  max-height: 200px;
+  max-height: 100px;
   overflow-y: scroll;
 }
 .commentDiv p:first-child {
@@ -111,4 +113,7 @@
   padding: 0px 10px 4px 10px;
   font-size: 15px;
   font-weight: 600;
+}
+.addRow {
+  grid-template-rows: 400px auto auto auto 100px 40px;
 }
