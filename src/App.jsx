@@ -56,6 +56,7 @@ function App() {
       }
     );
   };
+  //adding post to the database
   const addPost = async (URL) => {
     const postQuery = collection(db, "posts");
     const res = await addDoc(postQuery, {
