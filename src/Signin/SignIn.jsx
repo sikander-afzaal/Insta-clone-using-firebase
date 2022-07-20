@@ -8,6 +8,14 @@ import {
 } from "firebase/auth";
 import { gettingUser } from "../redux/userSlice";
 import { useDispatch } from "react-redux";
+import { db } from "../firebase";
+import {
+  addDoc,
+  collection,
+  getDocs,
+  onSnapshot,
+  query,
+} from "firebase/firestore";
 function SignIn({ setModal }) {
   const dispatch = useDispatch();
   const signInGoogle = async () => {
@@ -15,11 +23,38 @@ function SignIn({ setModal }) {
       const google = new GoogleAuthProvider();
       const data = await signInWithPopup(auth, google);
       if (data) {
-        const newUser = {
-          name: data.user.displayName,
-          profilePic: data.user.photoURL,
-        };
-        dispatch(gettingUser(newUser));
+        let person = false;
+        const queryCol = collection(db, "users");
+        const unsub = await getDocs(queryCol);
+        if (unsub) {
+          //checking if user already exists in the database
+          unsub.forEach((doc) => {
+            console.log(doc.data());
+            if (doc.data().email === data.user.email) {
+              const newUser = {
+                name: doc.data().name,
+                profilePic: doc.data().photo,
+              };
+              dispatch(gettingUser(newUser));
+              person = true;
+            }
+          });
+          //if not then we add him to the database
+          if (!person) {
+            const adding = await addDoc(queryCol, {
+              name: data.user.displayName,
+              email: data.user.email,
+              photo: data.user.photoURL,
+            });
+            if (adding) {
+              const newUser = {
+                name: data.user.displayName,
+                profilePic: data.user?.photoURL,
+              };
+              dispatch(gettingUser(newUser));
+            }
+          }
+        }
         setModal(false);
       }
     } catch (err) {
