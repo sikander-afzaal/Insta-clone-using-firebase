@@ -9,13 +9,7 @@ import {
 import { gettingUser } from "../redux/userSlice";
 import { useDispatch } from "react-redux";
 import { db } from "../firebase";
-import {
-  addDoc,
-  collection,
-  getDocs,
-  onSnapshot,
-  query,
-} from "firebase/firestore";
+import { addDoc, collection, getDocs } from "firebase/firestore";
 function SignIn({ setModal }) {
   const dispatch = useDispatch();
   const signInGoogle = async () => {
@@ -34,6 +28,8 @@ function SignIn({ setModal }) {
               const newUser = {
                 name: doc.data().name,
                 profilePic: doc.data().photo,
+                email: doc.data().email,
+                id: doc.id,
               };
               dispatch(gettingUser(newUser));
               person = true;
@@ -42,14 +38,16 @@ function SignIn({ setModal }) {
           //if not then we add him to the database
           if (!person) {
             const adding = await addDoc(queryCol, {
-              name: data.user.displayName,
-              email: data.user.email,
-              photo: data.user.photoURL,
+              name: data.user?.displayName,
+              email: data.user?.email,
+              photo: data.user?.photoURL,
             });
             if (adding) {
               const newUser = {
-                name: data.user.displayName,
+                name: data.user?.displayName,
                 profilePic: data.user?.photoURL,
+                email: data.user?.email,
+                id: adding.id,
               };
               dispatch(gettingUser(newUser));
             }

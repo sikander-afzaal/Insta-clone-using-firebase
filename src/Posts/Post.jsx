@@ -10,9 +10,11 @@ import {
   query,
   doc,
   updateDoc,
+  setDoc,
+  deleteDoc,
 } from "firebase/firestore";
 import { useSelector } from "react-redux";
-function Post({ post }) {
+function Post({ post, likedPosts }) {
   const { user } = useSelector((state) => state.userState);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
@@ -29,11 +31,21 @@ function Post({ post }) {
         })
       );
     });
+
     //end getting comments
     return () => {
       unsub();
     };
   }, []);
+
+  //checking if the user has liked this post or not
+  useEffect(() => {
+    likedPosts.forEach((liked) => {
+      if (liked.id === post.id) {
+        setLike(true);
+      }
+    });
+  }, [likedPosts.length]);
 
   //adding comment
   const addComment = async (e, id) => {
@@ -49,7 +61,7 @@ function Post({ post }) {
     });
     setNewComment("");
   };
-  const likeHandler = (id, likes) => {
+  const likeHandler = async (id, likes) => {
     if (!user) {
       alert("please sign in");
     }
@@ -59,11 +71,20 @@ function Post({ post }) {
       updateDoc(query, {
         likes: likeFinal,
       });
+      const query2 = doc(db, "users", user.id, "likedPosts", id);
+      const data = await setDoc(query2, {
+        ...post,
+      });
     } else {
+      if (likes <= 0) {
+        return;
+      }
       const likeFinal = likes - 1;
       updateDoc(query, {
         likes: likeFinal,
       });
+      const query2 = doc(db, "users", user.id, "likedPosts", id);
+      const data = await deleteDoc(query2);
     }
   };
   return (
