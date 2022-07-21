@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./Header.module.css";
 import logo from "../assets/logo.png";
 import SignIn from "../Signin/SignIn.jsx";
@@ -7,14 +7,21 @@ import { logOut } from "../redux/userSlice";
 import { useSelector, useDispatch } from "react-redux";
 
 import plus from "../assets/plus.png";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 function Header({ openModal }) {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.userState);
   const [openSignInModal, setOpenSignInModal] = useState(false);
+  useEffect(() => {
+    onAuthStateChanged(auth, (data) => {
+      if (!data) {
+        dispatch(logOut());
+      }
+    });
+  }, []);
 
-  const signOut = async () => {
-    const res = await auth.signOut();
-    dispatch(logOut);
+  const signOutFunc = async () => {
+    const res = await signOut(auth);
   };
   return (
     <div className={styles.header}>
@@ -29,7 +36,7 @@ function Header({ openModal }) {
             alt={"profile pic"}
           />
           <p>{user?.name}</p>
-          <button onClick={signOut}>Sign Out</button>
+          <button onClick={signOutFunc}>Sign Out</button>
         </div>
       ) : (
         <div className={styles.rightHeader}>

@@ -14,6 +14,7 @@ function Posts() {
   const { user } = useSelector((state) => state.userState);
   const [posts, setPosts] = useState([]);
   const [likedPosts, setLikedPosts] = useState([]);
+  const [savedPosts, setSavedPosts] = useState([]);
 
   useEffect(() => {
     const q = query(collection(db, "posts"), orderBy("timeStamp", "desc"));
@@ -30,10 +31,12 @@ function Posts() {
   }, []);
   //getting all the liked posts that have been liked by this user
   useEffect(() => {
-    const gettingLiked = async () => {
+    const gettingPosts = async () => {
       if (user) {
         const likedQ = collection(db, "users", user.id, "likedPosts");
+        const savedQ = collection(db, "users", user.id, "savedPosts");
         const data = await getDocs(likedQ);
+        const dataSaved = await getDocs(savedQ);
         if (data) {
           setLikedPosts(
             data.docs.map((doc) => {
@@ -41,15 +44,34 @@ function Posts() {
             })
           );
         }
+        if (dataSaved) {
+          setSavedPosts(
+            dataSaved.docs.map((doc) => {
+              return doc.data();
+            })
+          );
+        }
+      } else {
+        return;
       }
     };
-    gettingLiked();
-  }, [user.id]);
+    console.log("logged");
+    setSavedPosts([]);
+    setLikedPosts([]);
+    gettingPosts();
+  }, [user]);
 
   return (
     <div className={styles.posts}>
       {posts.map((post) => {
-        return <Post likedPosts={likedPosts} key={post.id} post={post} />;
+        return (
+          <Post
+            savedPosts={savedPosts}
+            likedPosts={likedPosts}
+            key={post.id}
+            post={post}
+          />
+        );
       })}
     </div>
   );

@@ -59,6 +59,7 @@ function SignIn({ setModal }) {
       console.log(err);
     }
   };
+  //sign in with facebook
   const signInFacebook = async () => {
     try {
       const facebook = new FacebookAuthProvider();

@@ -14,11 +14,14 @@ import {
   deleteDoc,
 } from "firebase/firestore";
 import { useSelector } from "react-redux";
-function Post({ post, likedPosts }) {
+import saveIco from "../assets/save.svg";
+import savedIco from "../assets/saved.svg";
+function Post({ post, likedPosts, savedPosts }) {
   const { user } = useSelector((state) => state.userState);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
   const [viewComments, setViewComments] = useState(false);
+  const [saved, setSaved] = useState(false);
   const [like, setLike] = useState(false);
   useEffect(() => {
     //gettin comments of that post
@@ -40,12 +43,25 @@ function Post({ post, likedPosts }) {
 
   //checking if the user has liked this post or not
   useEffect(() => {
-    likedPosts.forEach((liked) => {
-      if (liked.id === post.id) {
-        setLike(true);
-      }
-    });
-  }, [likedPosts.length]);
+    if (likedPosts.length > 0) {
+      likedPosts.forEach((liked) => {
+        if (liked.id === post.id) {
+          setLike(true);
+        }
+      });
+    } else {
+      setLike(false);
+    }
+    if (savedPosts.length > 0) {
+      savedPosts.forEach((savedP) => {
+        if (savedP.id === post.id) {
+          setSaved(true);
+        }
+      });
+    } else {
+      setSaved(false);
+    }
+  }, [likedPosts.length, savedPosts.length]);
 
   //adding comment
   const addComment = async (e, id) => {
@@ -72,7 +88,7 @@ function Post({ post, likedPosts }) {
         likes: likeFinal,
       });
       const query2 = doc(db, "users", user.id, "likedPosts", id);
-      const data = await setDoc(query2, {
+      await setDoc(query2, {
         ...post,
       });
     } else {
@@ -84,7 +100,22 @@ function Post({ post, likedPosts }) {
         likes: likeFinal,
       });
       const query2 = doc(db, "users", user.id, "likedPosts", id);
-      const data = await deleteDoc(query2);
+      await deleteDoc(query2);
+    }
+  };
+  //saving posts
+  const savedHandler = async (specificPost) => {
+    if (!user) {
+      return;
+    }
+    setSaved((prev) => !prev);
+    const saveQuery = doc(db, "users", user.id, "savedPosts", specificPost.id);
+    if (saved) {
+      await deleteDoc(saveQuery);
+    } else {
+      await setDoc(saveQuery, {
+        ...post,
+      });
     }
   };
   return (
@@ -124,6 +155,12 @@ function Post({ post, likedPosts }) {
         >
           <path d="M34.6 3.1c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5s1.1-.2 1.6-.5c1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z"></path>
         </svg>
+        <img
+          onClick={() => savedHandler(post)}
+          className={styles.savedIco}
+          src={saved ? savedIco : saveIco}
+          alt=""
+        />
       </div>
       <h4 className={styles.likes}>Total Likes {post?.likes}</h4>
       <h2 className={styles.caption}>
