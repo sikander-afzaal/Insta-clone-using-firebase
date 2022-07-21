@@ -12,6 +12,7 @@ import { app, db } from "./firebase";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { useSelector } from "react-redux";
 import Loader from "./Loader";
+import Saved from "./Saved/Saved";
 
 function App() {
   const { user } = useSelector((state) => state.userState);
@@ -21,6 +22,7 @@ function App() {
   const [imageUrl, setImageUrl] = useState("");
   const [modal, setModal] = useState(false);
   const [loader, setLoader] = useState(false);
+  const [savedRoute, setSavedRoute] = useState(false);
   //getting uploaded file
   const fileUpload = (e) => {
     if (e.target.files && e.target.files[0]) {
@@ -76,8 +78,13 @@ function App() {
   return (
     <div className="App">
       {loader && <Loader />}
-      <Header openModal={setModal} />
-      <Posts />
+      <Header
+        savedState={savedRoute}
+        saved={setSavedRoute}
+        openModal={setModal}
+      />
+      {savedRoute ? <Saved /> : <Posts />}
+
       {modal && (
         <>
           <div className="overlay" onClick={() => setModal(false)}></div>

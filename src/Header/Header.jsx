@@ -5,10 +5,11 @@ import SignIn from "../Signin/SignIn.jsx";
 import { auth } from "../firebase";
 import { logOut } from "../redux/userSlice";
 import { useSelector, useDispatch } from "react-redux";
+import { Link } from "react-router-dom";
 
 import plus from "../assets/plus.png";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-function Header({ openModal }) {
+function Header({ openModal, saved, savedState }) {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.userState);
   const [openSignInModal, setOpenSignInModal] = useState(false);
@@ -26,7 +27,7 @@ function Header({ openModal }) {
   return (
     <div className={styles.header}>
       {openSignInModal && <SignIn setModal={setOpenSignInModal} />}
-      <img src={logo} alt="" />
+      <img onClick={() => saved(false)} src={logo} alt="" />
       {user ? (
         <div className={styles.rightHeader}>
           <img onClick={() => openModal(true)} src={plus} alt="" />
@@ -37,6 +38,9 @@ function Header({ openModal }) {
           />
           <p>{user?.name}</p>
           <button onClick={signOutFunc}>Sign Out</button>
+          <button onClick={() => saved((prev) => !prev)}>
+            {savedState ? "All Posts" : "Saved Posts"}
+          </button>
         </div>
       ) : (
         <div className={styles.rightHeader}>

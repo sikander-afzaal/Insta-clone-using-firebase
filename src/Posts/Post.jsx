@@ -43,25 +43,29 @@ function Post({ post, likedPosts, savedPosts }) {
 
   //checking if the user has liked this post or not
   useEffect(() => {
-    if (likedPosts.length > 0) {
-      likedPosts.forEach((liked) => {
-        if (liked.id === post.id) {
-          setLike(true);
-        }
-      });
-    } else {
-      setLike(false);
+    if (likedPosts) {
+      if (likedPosts.length > 0) {
+        likedPosts.forEach((liked) => {
+          if (liked.id === post.id) {
+            setLike(true);
+          }
+        });
+      } else {
+        setLike(false);
+      }
     }
-    if (savedPosts.length > 0) {
-      savedPosts.forEach((savedP) => {
-        if (savedP.id === post.id) {
-          setSaved(true);
-        }
-      });
-    } else {
-      setSaved(false);
+    if (savedPosts) {
+      if (savedPosts.length > 0) {
+        savedPosts.forEach((savedP) => {
+          if (savedP.id === post.id) {
+            setSaved(true);
+          }
+        });
+      } else {
+        setSaved(false);
+      }
     }
-  }, [likedPosts.length, savedPosts.length]);
+  }, [likedPosts?.length, savedPosts?.length]);
 
   //adding comment
   const addComment = async (e, id) => {

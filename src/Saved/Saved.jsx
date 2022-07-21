@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import styles from "./Posts.module.css";
+import styles from "../Posts/Posts.module.css";
 import { db } from "../firebase";
 import {
   collection,
@@ -8,16 +8,22 @@ import {
   orderBy,
   query,
 } from "firebase/firestore";
-import Post from "./Post";
+import Post from "../Posts/Post";
 import { useSelector } from "react-redux";
-function Posts() {
+import Loader from "../Loader";
+function Saved() {
   const { user } = useSelector((state) => state.userState);
-  const [posts, setPosts] = useState([]);
-  const [likedPosts, setLikedPosts] = useState([]);
   const [savedPosts, setSavedPosts] = useState([]);
-
+  const [posts, setPosts] = useState([]);
+  const [loader, setLoader] = useState(false);
   useEffect(() => {
-    const q = query(collection(db, "posts"), orderBy("timeStamp", "desc"));
+    if (!user) {
+      return;
+    }
+    const q = query(
+      collection(db, "users", user.id, "savedPosts"),
+      orderBy("timeStamp", "desc")
+    );
     const unSub = onSnapshot(q, (snapshot) => {
       setPosts(
         snapshot.docs.map((doc) => {
@@ -33,47 +39,33 @@ function Posts() {
   useEffect(() => {
     const gettingPosts = async () => {
       if (user) {
-        const likedQ = collection(db, "users", user.id, "likedPosts");
+        setLoader(true);
         const savedQ = collection(db, "users", user.id, "savedPosts");
-        const data = await getDocs(likedQ);
         const dataSaved = await getDocs(savedQ);
-        if (data) {
-          setLikedPosts(
-            data.docs.map((doc) => {
-              return doc.data();
-            })
-          );
-        }
         if (dataSaved) {
           setSavedPosts(
             dataSaved.docs.map((doc) => {
               return doc.data();
             })
           );
+          setLoader(false);
         }
       } else {
         return;
       }
     };
     setSavedPosts([]);
-    setLikedPosts([]);
     gettingPosts();
   }, [user]);
 
   return (
     <div className={styles.posts}>
+      {loader && <Loader />}
       {posts.map((post) => {
-        return (
-          <Post
-            savedPosts={savedPosts}
-            likedPosts={likedPosts}
-            key={post.id}
-            post={post}
-          />
-        );
+        return <Post savedPosts={savedPosts} key={post.id} post={post} />;
       })}
     </div>
   );
 }
 
-export default Posts;
+export default Saved;
