@@ -2,27 +2,21 @@ import React, { useEffect, useState } from "react";
 import styles from "./Header.module.css";
 import logo from "../assets/logo.png";
 import SignIn from "../Signin/SignIn.jsx";
-import { auth } from "../firebase";
-import { logOut } from "../redux/userSlice";
 import { useSelector, useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
 
 import plus from "../assets/plus.png";
-import { onAuthStateChanged, signOut } from "firebase/auth";
+import { logOut } from "../redux/userSlice";
+import { auth } from "../firebase";
 function Header({ openModal, saved, savedState }) {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.userState);
   const [openSignInModal, setOpenSignInModal] = useState(false);
-  useEffect(() => {
-    onAuthStateChanged(auth, (data) => {
-      if (!data) {
-        dispatch(logOut());
-      }
-    });
-  }, []);
 
-  const signOutFunc = async () => {
-    const res = await signOut(auth);
+  const signOutFunc = () => {
+    auth.signOut().then(() => {
+      dispatch(logOut());
+      localStorage.removeItem("User");
+    });
   };
   return (
     <div className={styles.header}>

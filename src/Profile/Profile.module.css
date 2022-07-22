@@ -1,0 +1,88 @@
+.profCont {
+  background-color: rgb(250, 250, 250);
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 4rem;
+}
+.profile {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  max-width: 800px;
+  width: 100%;
+}
+.topProfile {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  gap: 3rem;
+}
+.topProfile img {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+}
+.rightProfile {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 20px;
+}
+.rightProfile h1 {
+  font-size: 30px;
+}
+.row {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 3rem;
+}
+.row h2 {
+  font-size: 20px;
+}
+.row h2 span {
+  font-weight: normal;
+}
+.bottomProfile {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin-top: 3rem;
+  width: 100%;
+}
+.header {
+  padding-top: 15px;
+  border-top: 1px solid grey;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 50px;
+}
+.header h4 {
+  font-size: 18px;
+  color: black;
+  font-weight: normal;
+  cursor: pointer;
+  position: relative;
+  user-select: none;
+}
+.active {
+  font-weight: bold !important;
+}
+.active::before {
+  content: "";
+  top: -15px;
+  height: 2px;
+  left: 0;
+  width: 100%;
+  position: absolute;
+  background-color: black;
+}

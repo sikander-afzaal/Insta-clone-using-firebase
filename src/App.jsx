@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import Header from "./Header/Header";
 import Posts from "./Posts/Posts";
@@ -9,12 +9,20 @@ import {
   uploadBytesResumable,
 } from "firebase/storage";
 import { app, db } from "./firebase";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
-import { useSelector } from "react-redux";
+import {
+  addDoc,
+  collection,
+  doc,
+  serverTimestamp,
+  setDoc,
+} from "firebase/firestore";
+import { useSelector, useDispatch } from "react-redux";
 import Loader from "./Loader";
-import Saved from "./Saved/Saved";
+import Profile from "./Profile/Profile";
+import { gettingUser } from "./redux/userSlice";
 
 function App() {
+  const dispatch = useDispatch();
   const { user } = useSelector((state) => state.userState);
   const storage = getStorage(app); //for firebase storage so we can store images
   const [caption, setCaption] = useState("");
@@ -22,7 +30,14 @@ function App() {
   const [imageUrl, setImageUrl] = useState("");
   const [modal, setModal] = useState(false);
   const [loader, setLoader] = useState(false);
-  const [savedRoute, setSavedRoute] = useState(false);
+  const [profileRoute, setProfileRoute] = useState(false);
+  useEffect(() => {
+    const localStorageToken = JSON.parse(localStorage.getItem("User"));
+    if (localStorageToken) {
+      dispatch(gettingUser(localStorageToken));
+    }
+  }, []);
+
   //getting uploaded file
   const fileUpload = (e) => {
     if (e.target.files && e.target.files[0]) {
@@ -70,6 +85,8 @@ function App() {
       timeStamp: serverTimestamp(),
     });
     if (res) {
+      const userQuery = collection(db, "users", user.id, "yourPosts");
+      await addDoc(userQuery, { yourPostId: res.id });
       setLoader(false);
       setCaption("");
       setImageUrl("");
@@ -79,11 +96,11 @@ function App() {
     <div className="App">
       {loader && <Loader />}
       <Header
-        savedState={savedRoute}
-        saved={setSavedRoute}
+        savedState={profileRoute}
+        saved={setProfileRoute}
         openModal={setModal}
       />
-      {savedRoute ? <Saved /> : <Posts />}
+      {profileRoute ? <Profile /> : <Posts />}
 
       {modal && (
         <>
