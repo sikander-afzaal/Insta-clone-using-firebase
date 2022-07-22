@@ -12,11 +12,36 @@ function Profile() {
   const params = useParams();
   const [headCheck, setHeadCheck] = useState("your");
   const [userParam, setUserParam] = useState({});
-  const { user } = useSelector((state) => state.userState);
-  const [myPosts, setMyPosts] = useState([]);
-  const [followedUsers, setFollowedUsers] = useState([]);
-  const [checkFollow, setCheckFollow] = useState(false);
+  const { user } = useSelector((state) => state.userState); //logged in user
+  const [myPosts, setMyPosts] = useState([]); //your posts that you have posted
+  const [followedUsers, setFollowedUsers] = useState([]); //the users that the profile has followed
+  const [checkFollow, setCheckFollow] = useState(false); //checking if the logged in user has followed the profile
+  const [totalFollowers, setTotalFollowers] = useState(0); //total followers the profile has
+
+  //function to get all the profiles that the logged in user has followed
+  const getFollowingUsers = async () => {
+    const query = collection(db, "users", params.id, "followed");
+    const data = await getDocs(query);
+    if (data) {
+      setFollowedUsers(
+        data.docs.map((doc) => {
+          return { ...doc.data() };
+        })
+      );
+    }
+  };
+
+  //function to get the total followers of the profile
+  const getTotalFollowers = async () => {
+    const query = collection(db, "users", params.id, "followers");
+    const data = await getDocs(query);
+    if (data) {
+      setTotalFollowers(data.docs.length);
+    }
+  };
+
   useEffect(() => {
+    //function to get the posts that this profile has posted
     const getPosts = async () => {
       const query = collection(db, "users", params.id, "yourPosts");
       const data = await getDocs(query);
@@ -28,41 +53,47 @@ function Profile() {
         );
       }
     };
+    //function to get the profile
     const getUser = async () => {
       const query = doc(db, "users", params.id);
       const data = await getDoc(query);
       setUserParam({ ...data.data() });
     };
-    const getFollowingUsers = async () => {
-      const query = collection(db, "users", user.id, "followed");
-      const data = await getDocs(query);
-      if (data) {
-        setFollowedUsers(
-          data.docs.map((doc) => {
-            return { ...doc.data() };
-          })
-        );
-      }
-    };
+
     getPosts();
     getFollowingUsers();
+    getTotalFollowers();
     getUser();
   }, []);
-  useEffect(() => {
-    followedUsers.forEach((elem) => {
-      if (elem.id === params.id) {
-        setCheckFollow(true);
-        console.log("hi");
-      }
-    });
-  }, [followedUsers]);
 
-  //follow handler -----------
+  //use effect function to check if the logged in user has followed this profile or not
+  useEffect(() => {
+    const query = collection(db, "users", user.id, "followed");
+    const data = getDocs(query).then((docs) => {
+      docs.forEach((doc) => {
+        if (doc.data().id === params.id) {
+          setCheckFollow(true);
+        }
+      });
+    });
+  }, [followedUsers, params.id]);
+
+  //follow handler (function that add a follower to the profile) --------------------
   const followHandler = async () => {
     const queryFollow = collection(db, "users", user.id, "followed");
-    const data = await addDoc(queryFollow, {
+    //adding a follower to the profile
+    const i = await addDoc(queryFollow, {
       ...userParam,
+      id: params.id,
     });
+    //adding a this profile to the followed list of the logged in user
+    const r = await addDoc(collection(db, "users", params.id, "followers"), {
+      ...user,
+    });
+    if (i && r) {
+      getFollowingUsers();
+      getTotalFollowers();
+    }
   };
   return (
     <div className={styles.profCont}>
@@ -74,6 +105,7 @@ function Profile() {
               <h1>{userParam?.name || "USER NOT FOUND"}</h1>
               {user.id !== params.id && userParam.name && (
                 <button
+                  disabled={checkFollow}
                   onClick={followHandler}
                   className={`${checkFollow && styles.followed}  ${
                     styles.followBtn
@@ -88,10 +120,10 @@ function Profile() {
                 <span>{myPosts.length}</span> Your Posts
               </h2>
               <h2>
-                <span>0</span> Your Followers
+                <span>{totalFollowers}</span> Your Followers
               </h2>
               <h2>
-                <span>0</span> Following
+                <span>{followedUsers.length}</span> Following
               </h2>
             </div>
           </div>
