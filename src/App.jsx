@@ -85,16 +85,18 @@ function App() {
       timeStamp: serverTimestamp(),
       userPic: user.profilePic,
     });
-    const userQuery = collection(db, "users", user.id, "yourPosts");
-    await addDoc(userQuery, {
-      username: user.name,
-      caption: caption,
-      image: URL,
-      likes: 0,
-      timeStamp: serverTimestamp(),
-      userPic: user.profilePic,
-    });
+
     if (res) {
+      const userQuery = collection(db, "users", user.id, "yourPosts");
+      await addDoc(userQuery, {
+        username: user.name,
+        caption: caption,
+        image: URL,
+        likes: 0,
+        timeStamp: serverTimestamp(),
+        userPic: user.profilePic,
+        id: res.id,
+      });
       setLoader(false);
       setCaption("");
       setImageUrl("");
@@ -135,6 +137,7 @@ function App() {
                   className="file"
                   type="file"
                   id="addFile"
+                  accept=".jpg,.png"
                 />
               </>
             )}

@@ -10,20 +10,6 @@ function Profile() {
   const [headCheck, setHeadCheck] = useState("your");
   const { user } = useSelector((state) => state.userState);
   const [myPosts, setMyPosts] = useState([]);
-  useEffect(() => {
-    const getMyPosts = async () => {
-      const query = collection(db, "users", user.id, "yourPosts");
-      const myPosts = await getDocs(query);
-      if (myPosts) {
-        setMyPosts(
-          myPosts.docs.map((doc) => {
-            return { ...doc.data(), id: doc.id };
-          })
-        );
-      }
-    };
-    getMyPosts();
-  }, [myPosts]);
 
   return (
     <div className={styles.profCont}>
@@ -69,7 +55,7 @@ function Profile() {
           </div>
           {headCheck === "saved" && <Saved />}
           {headCheck === "liked" && <Liked />}
-          {headCheck === "your" && <MyPosts posts={myPosts} />}
+          {headCheck === "your" && <MyPosts />}
         </div>
       </div>
     </div>

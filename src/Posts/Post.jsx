@@ -60,9 +60,7 @@ function Post({ post, likedPosts, savedPosts }) {
     await updateDoc(query, {
       likes: likeFinal,
     });
-    await deleteDoc(queryUser, {
-      ...specificPost,
-    });
+    await deleteDoc(queryUser);
   };
 
   //liking post ---------------------------------------------
@@ -78,6 +76,7 @@ function Post({ post, likedPosts, savedPosts }) {
     });
     await setDoc(queryUser, {
       ...specificPost,
+      likes: likeFinal,
     });
   };
   //saving posts
