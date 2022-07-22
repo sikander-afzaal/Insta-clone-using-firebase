@@ -83,6 +83,7 @@ function App() {
       image: URL,
       likes: 0,
       timeStamp: serverTimestamp(),
+      userPic: user.profilePic,
     });
     if (res) {
       const userQuery = collection(db, "users", user.id, "yourPosts");

@@ -1,0 +1,121 @@
+.postView {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 800px;
+  height: 600px;
+  width: 95%;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 6;
+  background-color: white;
+  gap: 20px;
+}
+.leftView,
+.rightView {
+  flex: 0.5;
+  height: 100%;
+}
+.leftView img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.rightView {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-direction: column;
+  max-width: 50%;
+}
+.profileRow {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding-top: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid lightgray;
+  gap: 10px;
+  width: 100%;
+}
+.profileRow img {
+  max-width: 30px;
+  height: 30px;
+  object-fit: contain;
+  border-radius: 50%;
+}
+.profileRow h3 {
+  font-size: 14px;
+  font-weight: 600;
+}
+.postDesc {
+  max-height: 100%;
+  overflow-y: auto;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-direction: column;
+  padding: 10px 0px;
+  height: 100%;
+  width: 100%;
+}
+.postDesc .profileRow {
+  border: none !important;
+  padding-top: 10px;
+}
+.caption {
+  font-weight: normal;
+}
+.inputDiv {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 0px 10px 0px 0px;
+  gap: 10px;
+  height: 70px;
+  border-top: 1px solid lightgray;
+}
+.inputDiv textarea {
+  height: 100%;
+  flex: 1;
+  padding: 10px;
+  resize: none;
+  border: none;
+}
+.inputDiv h5 {
+  color: rgb(25, 87, 255);
+  font-size: 16px;
+  cursor: pointer;
+  user-select: none;
+}
+.inputDiv textarea:focus {
+  outline: none;
+}
+.comments {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-direction: column;
+  width: 100%;
+  padding-top: 10px;
+  padding-right: 10px;
+  gap: 20px;
+}
+.comment {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 10px;
+}
+.comment img {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+
+.comment p {
+  word-break: break-all;
+}

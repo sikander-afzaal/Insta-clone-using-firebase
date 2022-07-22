@@ -16,30 +16,13 @@ import {
 import { useSelector } from "react-redux";
 import saveIco from "../assets/save.svg";
 import savedIco from "../assets/saved.svg";
+import PostView from "../PostView/PostView";
 function Post({ post, likedPosts, savedPosts }) {
   const { user } = useSelector((state) => state.userState);
-  const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
   const [viewComments, setViewComments] = useState(false);
   const [saved, setSaved] = useState(false);
   const [like, setLike] = useState(false);
-  useEffect(() => {
-    //gettin comments of that post
-    const commetsDoc = collection(db, "posts", post.id, "Comments");
-    const comQuery = query(commetsDoc, orderBy("timeStamp", "desc"));
-    const unsub = onSnapshot(comQuery, (com) => {
-      setComments(
-        com.docs.map((com) => {
-          return { ...com.data(), id: com.id };
-        })
-      );
-    });
-
-    //end getting comments
-    return () => {
-      unsub();
-    };
-  }, []);
 
   //checking if the user has liked this post or not
   useEffect(() => {
@@ -67,20 +50,6 @@ function Post({ post, likedPosts, savedPosts }) {
     }
   }, [likedPosts?.length, savedPosts?.length]);
 
-  //adding comment
-  const addComment = async (e, id) => {
-    e.preventDefault();
-    if (!newComment) {
-      return;
-    }
-    const query = collection(db, "posts", id, "Comments");
-    await addDoc(query, {
-      username: user.name,
-      comment: newComment,
-      timeStamp: serverTimestamp(),
-    });
-    setNewComment("");
-  };
   const likeHandler = async (id, likes) => {
     if (!user) {
       alert("please sign in");
@@ -122,12 +91,27 @@ function Post({ post, likedPosts, savedPosts }) {
       });
     }
   };
+  //adding comment
+  const addComment = async (e, id) => {
+    e.preventDefault();
+    if (!newComment) {
+      return;
+    }
+    const query = collection(db, "posts", id, "Comments");
+    await addDoc(query, {
+      username: user.name,
+      comment: newComment,
+      timeStamp: serverTimestamp(),
+      pic: user.profilePic,
+    });
+    setNewComment("");
+  };
   return (
     <div
       key={post.id}
       className={`${styles.post} ${viewComments && styles.addRow}`}
     >
-      <img src={post?.image} alt="" />
+      <img className={styles.postImg} src={post?.image} alt="" />
       <div className={styles.row}>
         <svg
           onClick={() => {
@@ -172,17 +156,13 @@ function Post({ post, likedPosts, savedPosts }) {
       </h2>
 
       <div className={styles.commentDiv}>
-        <p onClick={() => setViewComments((prev) => !prev)}>
-          View Comments {comments.length}
+        <p
+          className={styles.viewCom}
+          onClick={() => setViewComments((prev) => !prev)}
+        >
+          View Comments
         </p>
-        {viewComments &&
-          comments.map((comment) => {
-            return (
-              <p key={comment.id} className={styles.comment}>
-                <span>{comment?.username}</span> {comment?.comment}
-              </p>
-            );
-          })}
+        {viewComments && <PostView post={post} modal={setViewComments} />}
       </div>
       <form onSubmit={(e) => addComment(e, post.id)}>
         <input
