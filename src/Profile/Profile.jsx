@@ -1,15 +1,29 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import Saved from "../Saved/Saved";
 import Liked from "../Liked/Liked";
 import styles from "./Profile.module.css";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../firebase";
+import MyPosts from "../MyPosts/MyPost";
 function Profile() {
   const [headCheck, setHeadCheck] = useState("your");
   const { user } = useSelector((state) => state.userState);
-  const [posts, setPosts] = useState([]);
-  // useEffect(() => {
-  //   const query =
-  // }, [headCheck])
+  const [myPosts, setMyPosts] = useState([]);
+  useEffect(() => {
+    const getMyPosts = async () => {
+      const query = collection(db, "users", user.id, "yourPosts");
+      const myPosts = await getDocs(query);
+      if (myPosts) {
+        setMyPosts(
+          myPosts.docs.map((doc) => {
+            return { ...doc.data(), id: doc.id };
+          })
+        );
+      }
+    };
+    getMyPosts();
+  }, [myPosts]);
 
   return (
     <div className={styles.profCont}>
@@ -20,7 +34,7 @@ function Profile() {
             <h1>{user?.name}</h1>
             <div className={styles.row}>
               <h2>
-                <span>0</span> Your Posts
+                <span>{myPosts.length}</span> Your Posts
               </h2>
               <h2>
                 <span>0</span> Your Followers
@@ -55,6 +69,7 @@ function Profile() {
           </div>
           {headCheck === "saved" && <Saved />}
           {headCheck === "liked" && <Liked />}
+          {headCheck === "your" && <MyPosts posts={myPosts} />}
         </div>
       </div>
     </div>

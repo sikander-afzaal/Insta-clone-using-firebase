@@ -11,32 +11,13 @@ import {
 import Post from "../Posts/Post";
 import { useSelector } from "react-redux";
 import Loader from "../Loader";
-function Saved() {
+function MyPosts({ posts }) {
   const { user } = useSelector((state) => state.userState);
-  const [posts, setPosts] = useState([]);
   const [likedPosts, setLikedPosts] = useState([]);
   const [savedPosts, setSavedPosts] = useState([]);
   const [loader, setLoader] = useState(false);
-  useEffect(() => {
-    if (!user) {
-      return;
-    }
-    const q = query(
-      collection(db, "users", user.id, "savedPosts"),
-      orderBy("timeStamp", "desc")
-    );
-    const unSub = onSnapshot(q, (snapshot) => {
-      setPosts(
-        snapshot.docs.map((doc) => {
-          return { ...doc.data(), id: doc.id };
-        })
-      );
-    });
-    return () => {
-      unSub();
-    };
-  }, []);
-  //getting all the liked posts that have been liked by this user
+
+  //getting all the liked posts that have been liked or saved by this user
   useEffect(() => {
     const gettingPosts = async () => {
       if (user) {
@@ -84,4 +65,4 @@ function Saved() {
   );
 }
 
-export default Saved;
+export default MyPosts;

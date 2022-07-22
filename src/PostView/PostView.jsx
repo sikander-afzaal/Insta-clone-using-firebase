@@ -10,6 +10,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "../firebase";
+import img from "../assets/user.png";
 function PostView({ post, modal }) {
   const { user } = useSelector((state) => state.userState);
   const [comments, setComments] = useState([]);
@@ -36,6 +37,9 @@ function PostView({ post, modal }) {
   //adding comment
   const addComment = async (e, id) => {
     e.preventDefault();
+    if (!user) {
+      alert("please sign in");
+    }
     if (!newComment) {
       return;
     }
@@ -57,12 +61,12 @@ function PostView({ post, modal }) {
         </div>
         <div className={styles.rightView}>
           <div className={styles.profileRow}>
-            <img src={post.userPic} alt="" />
+            <img src={post.userPic || img} alt="" />
             <h3>{post.username}</h3>
           </div>
           <div className={styles.postDesc}>
             <div className={styles.profileRow}>
-              <img src={post.userPic} alt="" />
+              <img src={post.userPic || img} alt="" />
               <h3>
                 {post.username}{" "}
                 <span className={styles.caption}>{post.caption}</span>
@@ -72,7 +76,7 @@ function PostView({ post, modal }) {
               {comments.map((comment) => {
                 return (
                   <div key={comment.id} className={styles.comment}>
-                    <img src={comment.pic} alt="" />
+                    <img src={comment.pic || img} alt="" />
                     <p>
                       <strong>{comment.username} </strong> {comment.comment}
                     </p>

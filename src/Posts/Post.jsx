@@ -5,9 +5,6 @@ import { serverTimestamp } from "@firebase/firestore";
 import {
   addDoc,
   collection,
-  onSnapshot,
-  orderBy,
-  query,
   doc,
   updateDoc,
   setDoc,
@@ -50,31 +47,38 @@ function Post({ post, likedPosts, savedPosts }) {
     }
   }, [likedPosts?.length, savedPosts?.length]);
 
-  const likeHandler = async (id, likes) => {
+  const DislikePost = async (specificPost) => {
     if (!user) {
       alert("please sign in");
     }
-    const query = doc(db, "posts", id);
-    if (!like) {
-      const likeFinal = likes + 1;
-      updateDoc(query, {
-        likes: likeFinal,
-      });
-      const query2 = doc(db, "users", user.id, "likedPosts", id);
-      await setDoc(query2, {
-        ...post,
-      });
-    } else {
-      if (likes <= 0) {
-        return;
-      }
-      const likeFinal = likes - 1;
-      updateDoc(query, {
-        likes: likeFinal,
-      });
-      const query2 = doc(db, "users", user.id, "likedPosts", id);
-      await deleteDoc(query2);
+    if (specificPost.likes <= 0) {
+      return;
     }
+    const query = doc(db, "posts", specificPost.id);
+    const queryUser = doc(db, "users", user.id, "likedPosts", specificPost.id);
+    const likeFinal = specificPost.likes - 1;
+    await updateDoc(query, {
+      likes: likeFinal,
+    });
+    await deleteDoc(queryUser, {
+      ...specificPost,
+    });
+  };
+
+  //liking post ---------------------------------------------
+  const LikePost = async (specificPost) => {
+    if (!user) {
+      alert("please sign in");
+    }
+    const query = doc(db, "posts", specificPost.id);
+    const queryUser = doc(db, "users", user.id, "likedPosts", specificPost.id);
+    const likeFinal = specificPost.likes + 1;
+    await updateDoc(query, {
+      likes: likeFinal,
+    });
+    await setDoc(queryUser, {
+      ...specificPost,
+    });
   };
   //saving posts
   const savedHandler = async (specificPost) => {
@@ -119,7 +123,7 @@ function Post({ post, likedPosts, savedPosts }) {
               return alert("Please Sign in");
             }
             setLike(true);
-            likeHandler(post.id, post.likes);
+            LikePost(post);
           }}
           aria-label="Like"
           className={`${styles.heartRed} ${like ? styles.none : ""}`}
@@ -134,7 +138,7 @@ function Post({ post, likedPosts, savedPosts }) {
               return alert("Please Sign in");
             }
             setLike(false);
-            likeHandler(post.id, post.likes);
+            DislikePost(post);
           }}
           aria-label="Unlike"
           className={`${styles.heart} ${like ? styles.display : ""}`}

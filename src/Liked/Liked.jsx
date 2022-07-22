@@ -13,8 +13,9 @@ import { useSelector } from "react-redux";
 import Loader from "../Loader";
 function Saved() {
   const { user } = useSelector((state) => state.userState);
-  const [likedPosts, setLikedPosts] = useState([]);
   const [posts, setPosts] = useState([]);
+  const [likedPosts, setLikedPosts] = useState([]);
+  const [savedPosts, setSavedPosts] = useState([]);
   const [loader, setLoader] = useState(false);
   useEffect(() => {
     if (!user) {
@@ -39,21 +40,29 @@ function Saved() {
   useEffect(() => {
     const gettingPosts = async () => {
       if (user) {
-        setLoader(true);
-        const savedQ = collection(db, "users", user.id, "likedPosts");
+        const likedQ = collection(db, "users", user.id, "likedPosts");
+        const savedQ = collection(db, "users", user.id, "savedPosts");
+        const data = await getDocs(likedQ);
         const dataSaved = await getDocs(savedQ);
-        if (dataSaved) {
+        if (data) {
           setLikedPosts(
+            data.docs.map((doc) => {
+              return doc.data();
+            })
+          );
+        }
+        if (dataSaved) {
+          setSavedPosts(
             dataSaved.docs.map((doc) => {
               return doc.data();
             })
           );
-          setLoader(false);
         }
       } else {
         return;
       }
     };
+    setSavedPosts([]);
     setLikedPosts([]);
     gettingPosts();
   }, [user]);
@@ -62,7 +71,14 @@ function Saved() {
     <div className={styles.posts}>
       {loader && <Loader />}
       {posts.map((post) => {
-        return <Post likedPosts={likedPosts} key={post.id} post={post} />;
+        return (
+          <Post
+            savedPosts={savedPosts}
+            likedPosts={likedPosts}
+            key={post.id}
+            post={post}
+          />
+        );
       })}
     </div>
   );
