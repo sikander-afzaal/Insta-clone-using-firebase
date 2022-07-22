@@ -5,7 +5,9 @@ import { collection, getDocs, onSnapshot } from "firebase/firestore";
 import Post from "../Posts/Post";
 import { useSelector } from "react-redux";
 import Loader from "../Loader";
+import { useParams } from "react-router-dom";
 function MyPosts() {
+  const { id } = useParams();
   const { user } = useSelector((state) => state.userState);
   const [likedPosts, setLikedPosts] = useState([]);
   const [savedPosts, setSavedPosts] = useState([]);
@@ -13,7 +15,7 @@ function MyPosts() {
   const [posts, setPosts] = useState([]);
   //making it realtime
   useEffect(() => {
-    const query = collection(db, "users", user.id, "yourPosts");
+    const query = collection(db, "users", id, "yourPosts");
     const unsub = onSnapshot(query, (snapshot) => {
       setPosts(
         snapshot.docs.map((doc) => {
@@ -32,8 +34,8 @@ function MyPosts() {
     const gettingPosts = async () => {
       if (user) {
         setLoader(true);
-        const likedQ = collection(db, "users", user.id, "likedPosts");
-        const savedQ = collection(db, "users", user.id, "savedPosts");
+        const likedQ = collection(db, "users", id, "likedPosts");
+        const savedQ = collection(db, "users", id, "savedPosts");
         const data = await getDocs(likedQ);
         const dataSaved = await getDocs(savedQ);
         if (data) {

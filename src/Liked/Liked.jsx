@@ -11,7 +11,9 @@ import {
 import Post from "../Posts/Post";
 import { useSelector } from "react-redux";
 import Loader from "../Loader";
+import { useParams } from "react-router-dom";
 function Saved() {
+  const { id } = useParams();
   const { user } = useSelector((state) => state.userState);
   const [posts, setPosts] = useState([]);
   const [likedPosts, setLikedPosts] = useState([]);
@@ -22,13 +24,13 @@ function Saved() {
       return;
     }
     const q = query(
-      collection(db, "users", user.id, "likedPosts"),
+      collection(db, "users", id, "likedPosts"),
       orderBy("timeStamp", "desc")
     );
     const unSub = onSnapshot(q, (snapshot) => {
       setPosts(
         snapshot.docs.map((doc) => {
-          return { ...doc.data(), id: doc.id };
+          return { ...doc.data() };
         })
       );
     });
@@ -40,8 +42,8 @@ function Saved() {
   useEffect(() => {
     const gettingPosts = async () => {
       if (user) {
-        const likedQ = collection(db, "users", user.id, "likedPosts");
-        const savedQ = collection(db, "users", user.id, "savedPosts");
+        const likedQ = collection(db, "users", id, "likedPosts");
+        const savedQ = collection(db, "users", id, "savedPosts");
         const data = await getDocs(likedQ);
         const dataSaved = await getDocs(savedQ);
         if (data) {

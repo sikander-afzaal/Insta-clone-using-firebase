@@ -10,10 +10,12 @@ import {
   setDoc,
   deleteDoc,
 } from "firebase/firestore";
+import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import saveIco from "../assets/save.svg";
 import savedIco from "../assets/saved.svg";
 import PostView from "../PostView/PostView";
+import img from "../assets/user.png";
 function Post({ post, likedPosts, savedPosts }) {
   const { user } = useSelector((state) => state.userState);
   const [newComment, setNewComment] = useState("");
@@ -114,6 +116,10 @@ function Post({ post, likedPosts, savedPosts }) {
       key={post.id}
       className={`${styles.post} ${viewComments && styles.addRow}`}
     >
+      <Link to={`/Profile/${post.userId}`} className={styles.profileRow}>
+        <img src={post.userPic || img} alt="" />
+        <h3>{post.username}</h3>
+      </Link>
       <img className={styles.postImg} src={post?.image} alt="" />
       <div className={styles.row}>
         <svg
@@ -153,10 +159,10 @@ function Post({ post, likedPosts, savedPosts }) {
           alt=""
         />
       </div>
-      <h4 className={styles.likes}>Total Likes {post?.likes}</h4>
-      <h2 className={styles.caption}>
-        <span>{post?.username}</span> {post?.caption}
-      </h2>
+      <h4 className={styles.likes}>
+        {post?.likes} {post?.likes > 1 ? "Likes" : "Like"}
+      </h4>
+      <h2 className={styles.caption}>{post?.caption}</h2>
 
       <div className={styles.commentDiv}>
         <p
@@ -168,12 +174,12 @@ function Post({ post, likedPosts, savedPosts }) {
         {viewComments && <PostView post={post} modal={setViewComments} />}
       </div>
       <form onSubmit={(e) => addComment(e, post.id)}>
-        <input
+        <textarea
           onChange={(e) => setNewComment(e.target.value)}
           value={newComment}
           type="text"
           placeholder="Enter Comment"
-        />
+        ></textarea>
         <button type="submit" style={{ display: "none" }}></button>
       </form>
     </div>

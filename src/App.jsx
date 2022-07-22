@@ -9,17 +9,12 @@ import {
   uploadBytesResumable,
 } from "firebase/storage";
 import { app, db } from "./firebase";
-import {
-  addDoc,
-  collection,
-  doc,
-  serverTimestamp,
-  setDoc,
-} from "firebase/firestore";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { useSelector, useDispatch } from "react-redux";
 import Loader from "./Loader";
 import Profile from "./Profile/Profile";
 import { gettingUser } from "./redux/userSlice";
+import { Routes, Route } from "react-router-dom";
 
 function App() {
   const dispatch = useDispatch();
@@ -30,7 +25,6 @@ function App() {
   const [imageUrl, setImageUrl] = useState("");
   const [modal, setModal] = useState(false);
   const [loader, setLoader] = useState(false);
-  const [profileRoute, setProfileRoute] = useState(false);
   useEffect(() => {
     const localStorageToken = JSON.parse(localStorage.getItem("User"));
     if (localStorageToken) {
@@ -84,6 +78,7 @@ function App() {
       likes: 0,
       timeStamp: serverTimestamp(),
       userPic: user.profilePic,
+      userId: user.id,
     });
 
     if (res) {
@@ -105,12 +100,11 @@ function App() {
   return (
     <div className="App">
       {loader && <Loader />}
-      <Header
-        savedState={profileRoute}
-        saved={setProfileRoute}
-        openModal={setModal}
-      />
-      {profileRoute ? <Profile /> : <Posts />}
+      <Header openModal={setModal} />
+      <Routes>
+        <Route element={<Posts />} path={"/"} />
+        <Route element={<Profile />} path={"/Profile/:id"} />
+      </Routes>
 
       {modal && (
         <>
