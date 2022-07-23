@@ -15,6 +15,7 @@ import Loader from "./Loader";
 import Profile from "./Profile/Profile";
 import { gettingUser } from "./redux/userSlice";
 import { Routes, Route } from "react-router-dom";
+import Explore from "./Explore/Explore";
 
 function App() {
   const dispatch = useDispatch();
@@ -104,6 +105,7 @@ function App() {
       <Routes>
         <Route element={<Posts />} path={"/"} />
         <Route element={<Profile />} path={"/Profile/:id"} />
+        <Route element={<Explore />} path={"/Explore"} />
       </Routes>
 
       {modal && (

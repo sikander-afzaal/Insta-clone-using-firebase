@@ -1,53 +1,37 @@
 import React, { useEffect, useState } from "react";
-import styles from "./Posts.module.css";
+import styles from "../Posts/Posts.module.css";
 import { db } from "../firebase";
-import { collection, getDocs } from "firebase/firestore";
-import Post from "./Post";
+import {
+  collection,
+  getDocs,
+  onSnapshot,
+  orderBy,
+  query,
+} from "firebase/firestore";
+import Post from "../Posts/Post";
 import Loader from "../Loader";
 import { useSelector } from "react-redux";
-function Posts() {
+function Explore() {
   const { user } = useSelector((state) => state.userState);
   const [posts, setPosts] = useState([]);
-  const [followedUsers, setFollowedUsers] = useState([]);
   const [likedPosts, setLikedPosts] = useState([]);
   const [savedPosts, setSavedPosts] = useState([]);
   const [loader, setLoader] = useState(true);
 
   useEffect(() => {
-    if (!user) {
-      return;
-    }
-    const q = collection(db, "users", user.id, "followed");
-    getDocs(q)
-      .then((data) => {
-        setFollowedUsers(
-          data.docs.map((doc) => {
-            return { ...doc.data() };
-          })
-        );
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, [user]);
-  useEffect(() => {
-    if (followedUsers.length > 0) {
-      followedUsers.forEach((elem) => {
-        const postsQ = collection(db, "users", elem.id, "yourPosts");
-        getDocs(postsQ).then((data) => {
-          setPosts((prev) => {
-            const newPosts = data.docs.map((doc) => {
-              return { ...doc.data(), userId: elem.id };
-            });
-            setLoader(false);
-            return [...prev, ...newPosts];
-          });
-        });
-      });
-    } else {
+    const q = query(collection(db, "posts"), orderBy("timeStamp", "desc"));
+    const unSub = onSnapshot(q, (snapshot) => {
+      setPosts(
+        snapshot.docs.map((doc) => {
+          return { ...doc.data(), id: doc.id };
+        })
+      );
       setLoader(false);
-    }
-  }, [followedUsers]);
+    });
+    return () => {
+      unSub();
+    };
+  }, []);
 
   //getting all the liked posts that have been liked by this user
   useEffect(() => {
@@ -99,4 +83,4 @@ function Posts() {
   );
 }
 
-export default Posts;
+export default Explore;

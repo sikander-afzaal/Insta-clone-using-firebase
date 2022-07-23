@@ -6,6 +6,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 
 import plus from "../assets/plus.png";
+import exploreIco from "../assets/explore.png";
 import { logOut } from "../redux/userSlice";
 import { auth } from "../firebase";
 function Header({ openModal }) {
@@ -28,6 +29,9 @@ function Header({ openModal }) {
       {user ? (
         <div className={styles.rightHeader}>
           <img onClick={() => openModal(true)} src={plus} alt="" />
+          <Link to={"/Explore"}>
+            <img src={exploreIco} alt="" />
+          </Link>
           <Link to={`/Profile/${user.id}`}>
             <img
               className={styles.profile}
