@@ -3,7 +3,15 @@ import { useSelector } from "react-redux";
 import Saved from "../Saved/Saved";
 import Liked from "../Liked/Liked";
 import styles from "./Profile.module.css";
-import { addDoc, collection, doc, getDoc, getDocs } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  setDoc,
+} from "firebase/firestore";
 import { db } from "../firebase";
 import { useParams } from "react-router-dom";
 import MyPosts from "../MyPosts/MyPost";
@@ -80,20 +88,28 @@ function Profile() {
 
   //follow handler (function that add a follower to the profile) --------------------
   const followHandler = async () => {
-    const queryFollow = collection(db, "users", user.id, "followed");
-    //adding a follower to the profile
-    const i = await addDoc(queryFollow, {
-      ...userParam,
-      id: params.id,
-    });
-    //adding a this profile to the followed list of the logged in user
-    const r = await addDoc(collection(db, "users", params.id, "followers"), {
-      ...user,
-    });
-    if (i && r) {
-      getFollowingUsers();
-      getTotalFollowers();
+    if (!checkFollow) {
+      const queryFollow = doc(db, "users", user.id, "followed", params.id);
+      //adding a follower to the profile
+      await setDoc(queryFollow, {
+        ...userParam,
+        id: params.id,
+      });
+      //adding a this profile to the followed list of the logged in user
+      await setDoc(doc(db, "users", params.id, "followers", user.id), {
+        ...user,
+      });
+    } else {
+      //removing a follower to the profile
+      const queryFollow = doc(db, "users", user.id, "followed", params.id);
+      await deleteDoc(queryFollow);
+      //removing a this profile to the followed list of the logged in user
+      await deleteDoc(doc(db, "users", params.id, "followers", user.id));
+
+      setCheckFollow(false);
     }
+    getFollowingUsers();
+    getTotalFollowers();
   };
   return (
     <div className={styles.profCont}>
@@ -105,13 +121,12 @@ function Profile() {
               <h1>{userParam?.name || "USER NOT FOUND"}</h1>
               {user.id !== params.id && userParam.name && (
                 <button
-                  disabled={checkFollow}
                   onClick={followHandler}
                   className={`${checkFollow && styles.followed}  ${
                     styles.followBtn
                   }`}
                 >
-                  Follow
+                  {checkFollow ? "Followed" : "Follow"}
                 </button>
               )}
             </div>
