@@ -6,13 +6,41 @@ import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 
 import plus from "../assets/plus.png";
+import img from "../assets/user.png";
 import exploreIco from "../assets/explore.png";
 import { logOut } from "../redux/userSlice";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
+import { collection, getDocs, query, where } from "firebase/firestore";
 function Header({ openModal }) {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.userState);
   const [openSignInModal, setOpenSignInModal] = useState(false);
+  const [searchedAccounts, setSearchedAccounts] = useState("");
+  const [fetchedAcc, setFetchedAcc] = useState([]);
+
+  const fetchAccounts = (name) => {
+    const queryAcc = query(
+      collection(db, "users"),
+      where("name", ">=", name),
+      where("name", "<=", name + "z")
+    );
+    getDocs(queryAcc).then((data) => {
+      setFetchedAcc(
+        data.docs.map((doc) => {
+          return { ...doc.data(), id: doc.id };
+        })
+      );
+    });
+  };
+
+  const searchHandler = (e) => {
+    setSearchedAccounts(e.target.value);
+    if (e.target.value !== "") {
+      fetchAccounts(e.target.value);
+    } else {
+      setFetchedAcc([]);
+    }
+  };
 
   const signOutFunc = () => {
     auth.signOut().then(() => {
@@ -26,6 +54,36 @@ function Header({ openModal }) {
       <Link to={"/"}>
         <img src={logo} alt="" />
       </Link>
+      <div className={styles.searchDiv}>
+        <input
+          type="text"
+          placeholder="Search Accounts"
+          className={styles.input}
+          value={searchedAccounts}
+          onChange={searchHandler}
+        />
+        <div
+          className={`${styles.searchedAcc} ${
+            fetchedAcc.length > 0 && styles.display
+          }`}
+        >
+          {/* showing the searched users here ---------------------------------- */}
+          {fetchedAcc.map((acc) => {
+            return (
+              <Link
+                onClick={() => setFetchedAcc([])}
+                to={`/Profile/${acc.id}`}
+                key={acc.id}
+                className={styles.profileRow}
+              >
+                <img src={acc.photo || img} alt="" />
+                <h3>{acc.name}</h3>
+              </Link>
+            );
+          })}
+          {/* --------------------------------------------------------------- */}
+        </div>
+      </div>
       {user ? (
         <div className={styles.rightHeader}>
           <img onClick={() => openModal(true)} src={plus} alt="" />

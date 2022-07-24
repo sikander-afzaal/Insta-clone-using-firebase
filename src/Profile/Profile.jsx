@@ -4,7 +4,6 @@ import Saved from "../Saved/Saved";
 import Liked from "../Liked/Liked";
 import styles from "./Profile.module.css";
 import {
-  addDoc,
   collection,
   deleteDoc,
   doc,

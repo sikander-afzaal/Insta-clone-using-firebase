@@ -57,23 +57,73 @@
   text-decoration: none;
   color: black;
 }
-@media screen and (max-width: 774px) {
+.input {
+  width: 400px;
+  padding: 10px 10px;
+}
+.searchDiv {
+  position: relative;
+}
+.searchedAcc {
+  position: absolute;
+  top: 100%;
+  height: 500px;
+  width: 100%;
+  overflow-y: auto;
+  left: 0;
+  background-color: white;
+  border: 1px solid lightgrey;
+  border-bottom-right-radius: 10px;
+  border-bottom-left-radius: 10px;
+  display: none;
+  z-index: 5;
+}
+.display {
+  display: block;
+}
+.profileRow {
+  padding: 10px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding-top: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid lightgray;
+  gap: 10px;
+  width: 100%;
+  cursor: pointer;
+  text-decoration: none;
+}
+.profileRow:hover {
+  background-color: lightgray;
+}
+.profileRow img {
+  max-width: 30px;
+  height: 30px;
+  object-fit: contain;
+  border-radius: 50%;
+}
+.profileRow h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: black;
+}
+@media screen and (max-width: 1038px) {
   .header {
     flex-direction: column;
     height: auto;
     padding: 20px;
+    gap: 20px;
   }
 }
-@media screen and (max-width: 560px) {
-  .header {
-    flex-direction: column;
-    height: auto;
-    padding: 20px;
-  }
+@media screen and (max-width: 460px) {
   .rightHeader button {
     width: 150px;
   }
-  .rightHeader {
-    flex-direction: column;
+  .rightHeader button {
+    width: 100px;
+  }
+  .input {
+    width: 360px;
   }
 }
