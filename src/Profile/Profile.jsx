@@ -25,6 +25,9 @@ function Profile() {
   const [followedUsers, setFollowedUsers] = useState([]); //the users that the profile has followed
   const [checkFollow, setCheckFollow] = useState(false); //checking if the logged in user has followed the profile
   const [totalFollowers, setTotalFollowers] = useState(0); //total followers the profile has
+  const [followerModal, setFollowerModal] = useState(false); // the modal that shows the profile's followers
+  const [followingModal, setFollowingModal] = useState(false); // the modal that shows the profiles's following list
+  const [yourFollowers, setYourFollowers] = useState([]);
 
   //function to get all the profiles that the logged in user has followed
   const getFollowingUsers = async () => {
@@ -45,6 +48,11 @@ function Profile() {
     const data = await getDocs(query);
     if (data) {
       setTotalFollowers(data.docs.length);
+      setYourFollowers(
+        data.docs.map((doc) => {
+          return { ...doc.data() };
+        })
+      );
     }
   };
 
@@ -72,7 +80,7 @@ function Profile() {
     getFollowingUsers();
     getTotalFollowers();
     getUser();
-  }, []);
+  }, [params.id]);
 
   //use effect function to check if the logged in user has followed this profile or not
   useEffect(() => {
@@ -134,10 +142,16 @@ function Profile() {
               <h2>
                 <span>{myPosts.length}</span> Your Posts
               </h2>
-              <h2>
+              <h2
+                onClick={() => setFollowingModal(true)}
+                style={{ cursor: "pointer" }}
+              >
                 <span>{totalFollowers}</span> Your Followers
               </h2>
-              <h2>
+              <h2
+                style={{ cursor: "pointer" }}
+                onClick={() => setFollowerModal(true)}
+              >
                 <span>{followedUsers.length}</span> Following
               </h2>
             </div>
@@ -172,6 +186,50 @@ function Profile() {
           {headCheck === "your" && <MyPosts />}
         </div>
       </div>
+      {followerModal && (
+        <>
+          <div
+            onClick={() => setFollowerModal(false)}
+            className="overlay"
+          ></div>
+          <div className={styles.followModal}>
+            <h1>You are Following</h1>
+            {followedUsers.length > 0
+              ? followedUsers.map((elem) => {
+                  return (
+                    <div key={elem.id} className={styles.profileRow}>
+                      <img src={elem.photo || img} alt="" />
+                      <h3>{elem.name}</h3>
+                    </div>
+                  );
+                })
+              : "You are Following No one"}
+            {}
+          </div>
+        </>
+      )}
+      {followingModal && (
+        <>
+          <div
+            onClick={() => setFollowingModal(false)}
+            className="overlay"
+          ></div>
+          <div className={styles.followModal}>
+            <h1>You are Following</h1>
+            {yourFollowers.length > 0
+              ? yourFollowers.map((elem) => {
+                  return (
+                    <div key={elem.id} className={styles.profileRow}>
+                      <img src={elem.profilePic || img} alt="" />
+                      <h3>{elem.name}</h3>
+                    </div>
+                  );
+                })
+              : "You have no followers"}
+            {}
+          </div>
+        </>
+      )}
     </div>
   );
 }

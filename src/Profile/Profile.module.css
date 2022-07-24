@@ -103,3 +103,46 @@
 .followed {
   background-color: lightgray !important;
 }
+.followModal {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: column;
+  width: 500px;
+  height: 600px;
+  overflow-y: auto;
+  border: 1px solid lightgrey;
+  background-color: white;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 6;
+  border-radius: 10px;
+}
+.profileRow {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding-top: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid lightgray;
+  gap: 10px;
+  width: 100%;
+  padding-inline: 10px;
+}
+.profileRow img {
+  max-width: 30px;
+  height: 30px;
+  object-fit: contain;
+  border-radius: 50%;
+}
+.profileRow h3 {
+  font-size: 14px;
+  font-weight: 600;
+}
+.followModal h1 {
+  font-size: 30px;
+  padding: 10px;
+  text-align: center;
+}
