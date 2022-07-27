@@ -17,33 +17,7 @@ function SignIn({ setModal }) {
     try {
       const google = new GoogleAuthProvider();
       const data = await signInWithPopup(auth, google);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-  //sign in with facebook
-  const signInFacebook = async () => {
-    try {
-      const facebook = new FacebookAuthProvider();
-      const data = await signInWithPopup(auth, facebook);
-
       if (data) {
-        const newUser = {
-          name: data.user.displayName,
-          profilePic: data.user.photoURL,
-        };
-        dispatch(gettingUser(newUser));
-        setModal(false);
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
-  useEffect(() => {
-    onAuthStateChanged(auth, async (data) => {
-      if (!data) {
-        dispatch(logOut());
-      } else {
         let person = false;
         const queryCol = collection(db, "users");
         const unsub = await getDocs(queryCol);
@@ -67,15 +41,15 @@ function SignIn({ setModal }) {
           //if not then we add him to the database
           if (!person) {
             const adding = await addDoc(queryCol, {
-              name: data?.displayName,
-              email: data?.email,
-              photo: data?.photoURL,
+              name: data.user?.displayName,
+              email: data.user?.email,
+              photo: data.user?.photoURL,
             });
             if (adding) {
               const newUser = {
-                name: data?.displayName,
-                profilePic: data?.photoURL,
-                email: data?.email,
+                name: data.user?.displayName,
+                email: data.user?.email,
+                photo: data.user?.photoURL,
                 id: adding.id,
               };
               dispatch(gettingUser(newUser));
@@ -87,8 +61,11 @@ function SignIn({ setModal }) {
         }
         setModal(false);
       }
-    });
-  }, []);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <>
       <div onClick={() => setModal(false)} className="overlay"></div>
@@ -104,13 +81,6 @@ function SignIn({ setModal }) {
             alt=""
           />
           Google
-        </button>
-        <button onClick={signInFacebook} className="facebook">
-          <img
-            src="https://www.freepnglogos.com/uploads/facebook-logo-icon/facebook-logo-icon-file-facebook-icon-svg-wikimedia-commons-4.png"
-            alt=""
-          />
-          Facebook
         </button>
       </div>
     </>
